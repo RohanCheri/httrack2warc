@@ -18,6 +18,7 @@ package au.gov.nla.httrack2warc.httrack;
 
 import au.gov.nla.httrack2warc.ParsingException;
 
+import javax.sound.sampled.Line;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
@@ -34,7 +35,7 @@ class HtsTxtParser implements Closeable {
             "(?<statuscode>-?\\d+)\\t" +
             "(?<status>\\w+)[ ](error )?\\('(?<servermsg>[^']*)'\\)\\t" +
             "(?<mime>\\S*)\\t" +
-            "(?<etag>\\S*)\\t" +
+            "(?<date>\\S*)\\t" +
             "(?<url>.+)\\t" +
             "(?<localfile>[^\\t]*)\\t" +
             "\\(from[ ](?<via>.*)\\)$");
@@ -60,6 +61,17 @@ class HtsTxtParser implements Closeable {
         if (line == null) {
             return false;
         }
+
+        while (line.length() == 0) {
+            line = reader.readLine();
+
+            if (line == null) {
+                return false;
+            }
+        }
+
+//        System.out.println("Read Record Line: " + line + "\n");
+
         matcher.reset(line);
         if (!matcher.matches()) {
             throw new ParsingException("invalid record: " + line);

@@ -59,7 +59,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Path crawldir = null;
         Httrack2Warc httrack2Warc = new Httrack2Warc();
-        int verbosity = Arrays.asList(LOG_LEVELS).indexOf("warn");
+        int verbosity = Arrays.asList(LOG_LEVELS).indexOf("info");
+//        System.out.println("Run Arguments: " + Arrays.toString(args) + "\n");
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -171,6 +172,10 @@ public class Main {
                 optionsLine.append(arg);
             }
         }
+
+//        System.out.println("Options: " + optionsLine + "\n");
+//        System.out.println("Crawl Directory: " + crawldir + "\n");
+
         httrack2Warc.addWarcInfoLine("httrack2warcOptions: " + optionsLine);
 
         httrack2Warc.convert(crawldir);

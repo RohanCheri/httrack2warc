@@ -21,6 +21,7 @@ import au.gov.nla.httrack2warc.ParsingException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,7 @@ class HtsLogParser implements Closeable {
     private static final Pattern HEADER_RE = Pattern.compile("HTTrack(?<version>[^ ]+) launched on " +
             "(?<date>\\w+, \\d\\d \\w+ \\d\\d\\d\\d \\d\\d:\\d\\d:\\d\\d) at " +
             "(?<seedsAndFilters>.*)");
-    private static final Pattern CMDLINE_RE = Pattern.compile("\\(.*-O ?(?:\"([^\"]*)\"|([^ ]*)) .*");
+    private static final Pattern CMDLINE_RE = Pattern.compile("\\(.*-O. ?(?:\"([^\"]*)\"|([^ ]*)) .*");
 
     private final BufferedReader reader;
     String version;
@@ -63,18 +64,43 @@ class HtsLogParser implements Closeable {
 
     private void readCmdLine() throws IOException {
         String line = reader.readLine();
+
         if (line == null) {
             return;
         }
-        commandLine = line.substring(1, line.length() - 1).trim().split(" ", 2)[1];
+
+        while (line.length() == 0) {
+            line = reader.readLine();
+
+            if (line == null) {
+                return;
+            }
+        }
+
+//        System.out.println("\n\nLine: " + line + "\n\n");
+
+        String trimmedLine = line.substring(1, line.length() - 1).trim();
+//        System.out.println("Trimmed Line: " + trimmedLine + "\n");
+
+        String[] splitLine = trimmedLine.split(" ", 2);
+//        System.out.println("Split Line: " + Arrays.toString(splitLine) + "\n");
+
+        commandLine = splitLine[1];
+//        System.out.println("CommandLine: " + commandLine);
+
         Matcher matcher = CMDLINE_RE.matcher(line);
+//        System.out.println("\n\nMatcher: " + matcher.toString() + "\n");
+//        System.out.println("\n\nMatcher Matches: " + matcher.matches() + "\n");
         if (!matcher.matches()) {
             return;
         }
         outputDir = matcher.group(1);
+//        System.out.println("\n\n\nOutput Dir: " + outputDir + "\n\n\n");
+
         if (outputDir == null) {
             outputDir = matcher.group(2);
         }
+
         if (!outputDir.endsWith("/")) {
             outputDir += "/";
         }

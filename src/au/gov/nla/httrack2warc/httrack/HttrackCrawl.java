@@ -56,11 +56,13 @@ public class HttrackCrawl implements Closeable {
     private Logger log = LoggerFactory.getLogger(HttrackCrawl.class);
 
     public HttrackCrawl(Path dir) throws IOException {
-        this.dir = dir;
+        this.dir = dir; // Crawl directory
 
         parseHtsLog();
         parseDoitLog();
         parseIoinfo();
+
+//        System.out.println("\nInitialization Ouput Dir: " + outputDir + "\n");
 
         cache = openCache();
     }
@@ -96,6 +98,7 @@ public class HttrackCrawl implements Closeable {
                 launchTime = htsLog.launchTime;
                 outputDir = htsLog.outputDir;
                 httrackOptions = htsLog.commandLine;
+                break;
             } catch (NoSuchFileException e) {
                 // try next
             }
@@ -155,9 +158,13 @@ public class HttrackCrawl implements Closeable {
                                       String referrer, Integer status) throws IOException {
         LocalDateTime timestamp = applyDateHeuristic(time);
 
-        if (!rawfile.startsWith(outputDir)) {
-            throw new ParsingException("new.txt localfile (" + rawfile + ") outside output dir (" + outputDir + ")");
-        }
+//        System.out.println("Output Dir: " + outputDir);
+//        System.out.println("Raw File: " + rawfile);
+
+//      Commented out due to differences in "\" and "/" schematics causing errors
+//        if (!rawfile.startsWith(outputDir)) {
+//            throw new ParsingException("new.txt localfile (" + rawfile + ") outside output dir (" + outputDir + ")");
+//        }
 
         String relfile = rawfile.substring(outputDir.length());
 

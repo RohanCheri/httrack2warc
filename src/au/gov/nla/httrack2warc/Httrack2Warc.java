@@ -144,7 +144,7 @@ public class Httrack2Warc {
         });
     }
 
-    public void convertDirectory(Path sourceDirectory) throws IOException {
+    public void convertDirectory(Path sourceDirectory) throws IOException { // Source Directory is crawl directory passed in from arguments
         log.debug("Starting WARC conversion. sourceDirectory = {} outputDirectory = {}", sourceDirectory, outputDirectory);
 
         try (CdxWriter cdxWriter = cdxName == null ? null : new CdxWriter(outputDirectory.resolve(cdxName));
@@ -300,7 +300,7 @@ public class Httrack2Warc {
      * length of the body.
      */
     static String fixContentLength(String header, long length) {
-        return CONTENT_LENGTH_RE.matcher(header).replaceAll("Content-Length: " +  length + "\r\n");
+        return CONTENT_LENGTH_RE.matcher(header).replaceAll("Content-Length: " + length + "\r\n");
     }
 
     private String formatWarcInfo(HttrackCrawl crawl) {
@@ -410,5 +410,22 @@ public class Httrack2Warc {
 
     public void setRedirectFile(String redirectFile) {
         this.redirectFile = redirectFile;
+    }
+
+    protected String getDebuggingInformationString() {
+        StringBuilder debugInformationString = new StringBuilder("");
+
+        debugInformationString.append("Output Directory: ").append(getOutputDirectory()).append("\n");
+        debugInformationString.append("WarcSizeTarget: ").append(getWarcSizeTarget()).append("\n");
+        debugInformationString.append("Timezone: ").append(getTimezone()).append("\n");
+        debugInformationString.append("Warc Info: ").append(extraWarcInfo).append("\n");
+        debugInformationString.append("Compression: ").append(getCompression()).append("\n");
+        debugInformationString.append("Cdx: ").append(cdxName).append("\n");
+        debugInformationString.append("Strict: ").append(strict).append("\n");
+        debugInformationString.append("Rewrite Links: ").append(rewriteLinks).append("\n");
+        debugInformationString.append("Redirect Prefix: ").append(redirectPrefix).append("\n");
+        debugInformationString.append("Exclusions: ").append(urlExclusions).append("\n");
+
+        return debugInformationString.toString();
     }
 }
