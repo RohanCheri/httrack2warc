@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -161,10 +162,12 @@ public class HttrackCrawl implements Closeable {
 //        System.out.println("Output Dir: " + outputDir);
 //        System.out.println("Raw File: " + rawfile);
 
-//      Commented out due to differences in "\" and "/" schematics causing errors
-//        if (!rawfile.startsWith(outputDir)) {
-//            throw new ParsingException("new.txt localfile (" + rawfile + ") outside output dir (" + outputDir + ")");
-//        }
+        Path rawFilePath = Paths.get(rawfile.replace("%20", " "));
+        Path outputDirPath = Paths.get(outputDir.replace("%20", " "));
+
+        if (outputDirPath.toString().length() > 0 && !rawFilePath.startsWith(outputDirPath)) {
+            throw new ParsingException("new.txt localfile (" + rawFilePath + ") outside output dir (" + outputDirPath + ")");
+        }
 
         String relfile = rawfile.substring(outputDir.length());
 
